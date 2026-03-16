@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "==> Running deno check..."
+deno check src/**/*.ts 2>/dev/null || {
+  # Only check files that exist (early tasks won't have all files)
+  for f in $(git diff --cached --name-only --diff-filter=ACM | grep '\.ts$'); do
+    deno check "$f" || exit 1
+  done
+}
+
+echo "==> Running deno task test..."
+if ls tests/**/*_test.ts 1>/dev/null 2>&1; then
+  deno task test || exit 1
+  echo "==> All tests passed."
+else
+  echo "==> No test files found, skipping tests."
+fi
+
+echo "==> Pre-commit checks passed."
