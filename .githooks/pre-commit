@@ -1,13 +1,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "==> Running deno check..."
-deno check src/**/*.ts 2>/dev/null || {
-  # Only check files that exist (early tasks won't have all files)
-  for f in $(git diff --cached --name-only --diff-filter=ACM | grep '\.ts$'); do
-    deno check "$f" || exit 1
-  done
+# Get staged .ts files
+STAGED_TS=$(git diff --cached --name-only --diff-filter=ACM | grep '\.ts$' || true)
+
+if [ -z "$STAGED_TS" ]; then
+  echo "==> No .ts files staged, skipping checks."
+  exit 0
+fi
+
+echo "==> Running deno fmt --check..."
+deno fmt --check $STAGED_TS || {
+  echo "==> Format check failed. Run 'deno fmt' to fix."
+  exit 1
 }
+
+echo "==> Running deno lint..."
+deno lint $STAGED_TS || exit 1
+
+echo "==> Running deno check..."
+for f in $STAGED_TS; do
+  deno check "$f" || exit 1
+done
 
 echo "==> Running deno task test..."
 if ls tests/**/*_test.ts 1>/dev/null 2>&1; then
