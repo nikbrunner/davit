@@ -1,5 +1,8 @@
+import { runCLI } from "./cli/index.ts";
+import { runMCP } from "./mcp/server.ts";
+
 if (Deno.stdin.isTerminal()) {
-  console.log("davit: CLI mode (not implemented)");
+  await runCLI(Deno.args);
 } else {
-  console.log("davit: MCP mode (not implemented)");
+  await runMCP();
 }
