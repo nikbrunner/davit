@@ -1,0 +1,102 @@
+import { assertEquals, assertStringIncludes } from "@std/assert";
+import { buildVEvent, parseVEvent } from "../../src/core/ical.ts";
+
+Deno.test("buildVEvent: produces valid VCALENDAR with required fields", () => {
+  const ical = buildVEvent({
+    uid: "test-uid-123",
+    summary: "Team Meeting",
+    start: "2026-03-17T15:00:00Z",
+    end: "2026-03-17T15:30:00Z",
+  });
+
+  assertStringIncludes(ical, "BEGIN:VCALENDAR");
+  assertStringIncludes(ical, "VERSION:2.0");
+  assertStringIncludes(ical, "PRODID:-//davit//EN");
+  assertStringIncludes(ical, "BEGIN:VEVENT");
+  assertStringIncludes(ical, "UID:test-uid-123");
+  assertStringIncludes(ical, "SUMMARY:Team Meeting");
+  assertStringIncludes(ical, "DTSTART:20260317T150000Z");
+  assertStringIncludes(ical, "DTEND:20260317T153000Z");
+  assertStringIncludes(ical, "STATUS:CONFIRMED");
+  assertStringIncludes(ical, "END:VEVENT");
+  assertStringIncludes(ical, "END:VCALENDAR");
+});
+
+Deno.test("buildVEvent: includes description when provided", () => {
+  const ical = buildVEvent({
+    uid: "test-uid-456",
+    summary: "Lunch",
+    start: "2026-03-17T12:00:00Z",
+    end: "2026-03-17T13:00:00Z",
+    description: "At the Italian place",
+  });
+
+  assertStringIncludes(ical, "DESCRIPTION:At the Italian place");
+});
+
+Deno.test("buildVEvent: escapes special characters in description", () => {
+  const ical = buildVEvent({
+    uid: "test-uid-789",
+    summary: "Notes",
+    start: "2026-03-17T10:00:00Z",
+    end: "2026-03-17T11:00:00Z",
+    description: "Line 1\nLine 2; with semicolon, and comma",
+  });
+
+  assertStringIncludes(
+    ical,
+    "DESCRIPTION:Line 1\\nLine 2\\; with semicolon\\, and comma",
+  );
+});
+
+Deno.test("buildVEvent: generates UID when not provided", () => {
+  const ical = buildVEvent({
+    summary: "Auto UID",
+    start: "2026-03-17T10:00:00Z",
+    end: "2026-03-17T11:00:00Z",
+  });
+
+  assertStringIncludes(ical, "UID:");
+  const uidMatch = ical.match(/UID:(.+)/);
+  assertEquals(Array.isArray(uidMatch) && (uidMatch[1]?.length ?? 0) > 0, true);
+});
+
+Deno.test("parseVEvent: extracts fields from iCalendar string", () => {
+  const ical = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "BEGIN:VEVENT",
+    "UID:parse-test-123",
+    "SUMMARY:Parsed Event",
+    "DTSTART:20260317T150000Z",
+    "DTEND:20260317T160000Z",
+    "DESCRIPTION:Some notes\\nWith newline",
+    "STATUS:CONFIRMED",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+
+  const event = parseVEvent(ical);
+  assertEquals(event.uid, "parse-test-123");
+  assertEquals(event.summary, "Parsed Event");
+  assertEquals(event.start, "2026-03-17T15:00:00Z");
+  assertEquals(event.end, "2026-03-17T16:00:00Z");
+  assertEquals(event.description, "Some notes\nWith newline");
+});
+
+Deno.test("parseVEvent: handles missing optional fields", () => {
+  const ical = [
+    "BEGIN:VCALENDAR",
+    "BEGIN:VEVENT",
+    "UID:minimal-123",
+    "SUMMARY:Minimal",
+    "DTSTART:20260317T150000Z",
+    "DTEND:20260317T160000Z",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+
+  const event = parseVEvent(ical);
+  assertEquals(event.uid, "minimal-123");
+  assertEquals(event.description, undefined);
+});
