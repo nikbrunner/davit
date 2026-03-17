@@ -78,16 +78,17 @@ export CALDAV_PASSWORD="your-app-specific-password"
 # Calendars
 davit calendar list
 
-# List events
+# List events (natural language or ISO 8601)
+davit event list --from today --to "next friday"
 davit event list --from "2026-03-17T00:00:00Z" --to "2026-03-23T23:59:59Z"
 davit event list --calendar iCloud --format json
 
 # Show event details
 davit event show <uid> --calendar iCloud
 
-# Create
+# Create (natural language dates)
 davit event create "Meeting" \
-  --start "2026-03-17T16:00:00Z" --end "2026-03-17T16:30:00Z" \
+  --start "tomorrow at 4pm" --end "tomorrow at 4:30pm" \
   --desc "Notes" --location "Room 42" --url "https://meet.google.com/abc" \
   --calendar iCloud
 
