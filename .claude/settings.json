@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(deno:*)",
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(bash:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git config core.hooksPath:*)",
+      "Bash(ls:*)",
+      "Bash(source:*)",
+      "Edit",
+      "Write",
+      "Read",
+      "Glob",
+      "Grep"
+    ]
+  }
+}
