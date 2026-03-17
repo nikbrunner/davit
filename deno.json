@@ -7,7 +7,10 @@
     "lint": "deno lint",
     "fmt": "deno fmt",
     "fmt:check": "deno fmt --check",
-    "compile": "deno compile --allow-net --allow-read --allow-env --output dist/davit src/index.ts"
+    "compile": "deno compile --allow-net --allow-read --allow-env --output dist/davit src/index.ts",
+    "check": "deno check src/**/*.ts",
+    "checks": "deno task fmt:check && deno task lint && deno task check && deno task test",
+    "setup-git-hooks": "bash scripts/setup-hooks.sh"
   },
   "imports": {
     "tsdav": "npm:tsdav@2.1.8",
