@@ -58,12 +58,20 @@ async function resolveEvent(
 
 const listCommand = new Command()
   .description("List events in a time range")
-  .option("--from <date:string>", "Start date (natural language or ISO 8601)", {
-    default: new Date().toISOString(),
-  })
-  .option("--to <date:string>", "End date (natural language or ISO 8601)", {
-    default: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-  })
+  .option(
+    "--from <date:string>",
+    'Start date, e.g. "today", "next monday", "2026-03-17T00:00:00Z"',
+    {
+      default: new Date().toISOString(),
+    },
+  )
+  .option(
+    "--to <date:string>",
+    'End date, e.g. "next friday", "in 7 days", "2026-03-23T23:59:59Z"',
+    {
+      default: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+  )
   .option("--calendar <name:string>", "Calendar name")
   .option("--format <format:string>", "Output format (json|table)", {
     default: "table",
@@ -143,14 +151,14 @@ const createCommand = new Command()
   .arguments("<title:string>")
   .option(
     "--start <datetime:string>",
-    "Start time (natural language or ISO 8601)",
+    'Start time, e.g. "tomorrow at 3pm", "2026-03-17T15:00:00Z"',
     {
       required: true,
     },
   )
   .option(
     "--end <datetime:string>",
-    "End time (natural language or ISO 8601)",
+    'End time, e.g. "tomorrow at 4pm", "2026-03-17T16:00:00Z"',
     {
       required: true,
     },
@@ -211,11 +219,11 @@ const updateCommand = new Command()
   .option("--title <text:string>", "New title")
   .option(
     "--start <datetime:string>",
-    "New start time (natural language or ISO 8601)",
+    'New start time, e.g. "friday at 2pm"',
   )
   .option(
     "--end <datetime:string>",
-    "New end time (natural language or ISO 8601)",
+    'New end time, e.g. "friday at 3pm"',
   )
   .option("--desc <text:string>", "New description")
   .option("--location <place:string>", "Event location")
