@@ -19,5 +19,19 @@
       "Glob",
       "Grep"
     ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/postwrite.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
   }
 }
