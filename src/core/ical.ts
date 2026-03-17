@@ -88,7 +88,9 @@ export function buildVEvent(input: VEventInput): string {
 
 /** Parse a VCALENDAR string and extract the first VEVENT's fields */
 export function parseVEvent(icalString: string): VEventParsed {
-  const lines = icalString.split(/\r?\n/);
+  // RFC 5545: unfold continuation lines (lines starting with space/tab)
+  const unfolded = icalString.replace(/\r?\n[ \t]/g, "");
+  const lines = unfolded.split(/\r?\n/);
   const props: Record<string, string> = {};
 
   let inEvent = false;

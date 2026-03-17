@@ -101,6 +101,28 @@ Deno.test("parseVEvent: handles missing optional fields", () => {
   assertEquals(event.description, undefined);
 });
 
+Deno.test("parseVEvent: unfolds continuation lines", () => {
+  const ical = [
+    "BEGIN:VCALENDAR",
+    "BEGIN:VEVENT",
+    "UID:fold-test-1",
+    "SUMMARY:Folded Event",
+    "DTSTART:20260317T150000Z",
+    "DTEND:20260317T160000Z",
+    "DESCRIPTION:This is a very long description that has been folded",
+    "  across multiple lines by the server per RFC 5545 line folding rules",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+
+  const event = parseVEvent(ical);
+  assertEquals(
+    event.description,
+    "This is a very long description that has been folded" +
+      " across multiple lines by the server per RFC 5545 line folding rules",
+  );
+});
+
 Deno.test("parseVEvent: handles TZID-parameterized datetimes", () => {
   const ical = [
     "BEGIN:VCALENDAR",
