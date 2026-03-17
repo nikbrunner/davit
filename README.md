@@ -1,6 +1,7 @@
 # davit
 
-CalDAV CLI tool. Full CRUD for calendar events with iCloud support.
+CalDAV CLI tool. Full CRUD for calendar events. Works with any CalDAV server —
+tested primarily against iCloud.
 
 > "DAV it" — just do it.
 
@@ -9,7 +10,8 @@ CalDAV CLI tool. Full CRUD for calendar events with iCloud support.
 ### Prerequisites
 
 - [Deno 2](https://deno.land/)
-- iCloud CalDAV credentials (app-specific password from [appleid.apple.com](https://appleid.apple.com))
+- iCloud CalDAV credentials (app-specific password from
+  [appleid.apple.com](https://appleid.apple.com))
 
 ### Global Install
 
@@ -53,8 +55,8 @@ davit event update <uid> --title "New Title" --desc "Updated" --location "New Ro
 davit event delete <uid> --calendar iCloud
 ```
 
-All commands support `--format json|table` (default: table).
-`show`, `update`, `delete` accept `--calendar <name>` to narrow the search.
+All commands support `--format json|table` (default: table). `show`, `update`,
+`delete` accept `--calendar <name>` to narrow the search.
 
 ## Development
 
