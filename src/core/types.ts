@@ -134,6 +134,8 @@ export interface DavitConfig {
 
 export interface ServerConfig {
   url: string;
+  /** Separate CardDAV URL if different from CalDAV (e.g. iCloud uses contacts.icloud.com) */
+  carddavUrl?: string;
   username: string;
   password?: string;
 }

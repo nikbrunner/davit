@@ -16,9 +16,12 @@ async function createDavClient(
   }
 
   const password = resolvePassword(serverName, server.password);
+  const serverUrl = accountType === "carddav" && server.carddavUrl
+    ? server.carddavUrl
+    : server.url;
 
   return await createDAVClient({
-    serverUrl: server.url,
+    serverUrl,
     credentials: {
       username: server.username,
       password,

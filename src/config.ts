@@ -22,6 +22,7 @@ export function resolvePassword(
 
 interface TomlServerConfig {
   url: string;
+  carddav_url?: string;
   username: string;
   password?: string;
 }
@@ -41,6 +42,7 @@ export function resolveConfig(tomlString: string): DavitConfig {
   for (const [name, srv] of Object.entries(raw.servers ?? {})) {
     servers[name] = {
       url: srv.url,
+      carddavUrl: srv.carddav_url,
       username: srv.username,
       password: srv.password,
     };
@@ -65,9 +67,11 @@ export function generateDefaultConfig(): string {
   return `\
 default_server = "icloud"
 # default_calendar = "iCloud"
+# default_address_book = "Contacts"
 
 [servers.icloud]
 url = "https://caldav.icloud.com"
+carddav_url = "https://contacts.icloud.com"
 username = "your@apple-id.com"
 # Password resolved from DAVIT_ICLOUD_PASSWORD env var
 `;
