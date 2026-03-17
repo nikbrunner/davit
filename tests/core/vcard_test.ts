@@ -171,6 +171,21 @@ Deno.test("parseVCard: unfolds continuation lines", () => {
   );
 });
 
+Deno.test("buildVCard: preserves commas in N property components", () => {
+  const vcard = buildVCard({
+    uid: "comma-test",
+    fullName: "John Doe, Jr.",
+    lastName: "Doe, Jr.",
+    firstName: "John",
+  });
+  // Commas should NOT be escaped in structured N property
+  assertStringIncludes(vcard, "N:Doe, Jr.;John;;;");
+
+  // Round-trip: parse should recover the comma
+  const parsed = parseVCard(vcard);
+  assertEquals(parsed.lastName, "Doe, Jr.");
+});
+
 Deno.test("parseVCard: joins non-empty ADR components", () => {
   const vcard = [
     "BEGIN:VCARD",

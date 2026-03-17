@@ -88,6 +88,27 @@ Deno.test("buildUpdatePayload: merges existing contact with updates", () => {
   assertStringIncludes(payload.vCardString, "TEL;TYPE=CELL:+49 111 222333");
 });
 
+Deno.test("buildUpdatePayload: empty string clears a field", () => {
+  const existing: DavitContact = {
+    uid: "clear-123",
+    fullName: "Jane Doe",
+    phone: "+49 111 222333",
+    email: "jane@example.com",
+    addressBookUrl: "/ab/",
+    url: "/ab/clear-123.vcf",
+    etag: '"etag1"',
+  };
+
+  const payload = buildUpdatePayload(existing, {
+    uid: "clear-123",
+    phone: "",
+  });
+  // Phone should be cleared (not present in vCard)
+  assertEquals(payload.vCardString.includes("TEL"), false);
+  // Email should be preserved
+  assertStringIncludes(payload.vCardString, "EMAIL:jane@example.com");
+});
+
 Deno.test("mapContact: handles missing optional fields", () => {
   const minimalVcard = [
     "BEGIN:VCARD",

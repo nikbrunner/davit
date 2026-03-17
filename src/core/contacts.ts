@@ -9,6 +9,16 @@ import { buildVCard, parseVCard } from "./vcard.ts";
 // deno-lint-ignore no-explicit-any
 type DAVVCardObjectLike = Record<string, any>;
 
+/** Merge an update field with the existing value. Empty string clears the field. */
+function mergeField(
+  update: string | undefined,
+  existing: string | undefined,
+): string | undefined {
+  if (update === undefined) return existing;
+  if (update === "") return undefined;
+  return update;
+}
+
 /** Map a single DAV vCard object to a DavitContact */
 export function mapContact(
   raw: DAVVCardObjectLike,
@@ -91,7 +101,7 @@ export function buildCreatePayload(input: CreateContactInput): {
   return { filename: `${uid}.vcf`, vCardString, uid };
 }
 
-/** Build the payload for updating a contact — merges existing with changes */
+/** Build the payload for updating a contact — merges existing with changes. Empty string clears a field. */
 export function buildUpdatePayload(
   existing: DavitContact,
   updates: UpdateContactInput,
@@ -99,13 +109,13 @@ export function buildUpdatePayload(
   const vCardString = buildVCard({
     uid: existing.uid,
     fullName: updates.fullName ?? existing.fullName,
-    lastName: updates.lastName ?? existing.lastName,
-    firstName: updates.firstName ?? existing.firstName,
-    phone: updates.phone ?? existing.phone,
-    email: updates.email ?? existing.email,
-    address: updates.address ?? existing.address,
-    organization: updates.organization ?? existing.organization,
-    note: updates.note ?? existing.note,
+    lastName: mergeField(updates.lastName, existing.lastName),
+    firstName: mergeField(updates.firstName, existing.firstName),
+    phone: mergeField(updates.phone, existing.phone),
+    email: mergeField(updates.email, existing.email),
+    address: mergeField(updates.address, existing.address),
+    organization: mergeField(updates.organization, existing.organization),
+    note: mergeField(updates.note, existing.note),
   });
   return { vCardString };
 }
@@ -161,13 +171,13 @@ export async function updateContact(
   return {
     ...existing,
     fullName: updates.fullName ?? existing.fullName,
-    lastName: updates.lastName ?? existing.lastName,
-    firstName: updates.firstName ?? existing.firstName,
-    phone: updates.phone ?? existing.phone,
-    email: updates.email ?? existing.email,
-    address: updates.address ?? existing.address,
-    organization: updates.organization ?? existing.organization,
-    note: updates.note ?? existing.note,
+    lastName: mergeField(updates.lastName, existing.lastName),
+    firstName: mergeField(updates.firstName, existing.firstName),
+    phone: mergeField(updates.phone, existing.phone),
+    email: mergeField(updates.email, existing.email),
+    address: mergeField(updates.address, existing.address),
+    organization: mergeField(updates.organization, existing.organization),
+    note: mergeField(updates.note, existing.note),
   };
 }
 

@@ -32,6 +32,13 @@ function escapeVCardText(text: string): string {
     .replace(/,/g, "\\,");
 }
 
+/** Escape for structured property components (N, ADR) — commas are valid, only escape backslashes and newlines */
+function escapeVCardComponent(text: string): string {
+  return text
+    .replace(/\\/g, "\\\\")
+    .replace(/\n/g, "\\n");
+}
+
 /** Unescape vCard text */
 function unescapeVCardText(text: string): string {
   return text
@@ -94,7 +101,7 @@ export function buildVCard(input: VCardInput): string {
     "PRODID:-//davit//EN",
     `UID:${uid}`,
     `FN:${escapeVCardText(input.fullName)}`,
-    `N:${escapeVCardText(lastName)};${escapeVCardText(firstName)};;;`,
+    `N:${escapeVCardComponent(lastName)};${escapeVCardComponent(firstName)};;;`,
   ];
 
   if (input.phone) {
@@ -110,7 +117,7 @@ export function buildVCard(input: VCardInput): string {
     lines.push(`NOTE:${escapeVCardText(input.note)}`);
   }
   if (input.address) {
-    lines.push(`ADR:;;${escapeVCardText(input.address)};;;;`);
+    lines.push(`ADR:;;${escapeVCardComponent(input.address)};;;;`);
   }
 
   lines.push(`REV:${toVCardTimestamp(new Date())}`);
