@@ -11,6 +11,7 @@ import {
 } from "../core/events.ts";
 import { formatEvent, formatEvents, type OutputFormat } from "./format.ts";
 import type { DavitClient } from "../core/client.ts";
+import type { DavitEvent } from "../core/types.ts";
 
 /** Resolve the target calendar — by name or default */
 async function resolveCalendar(
@@ -80,6 +81,23 @@ const listCommand = new Command()
     }) => {
       const config = await loadConfig();
       const client = await createClient(config);
+
+      if (!calendar && !config.defaultCalendar) {
+        // No calendar specified — aggregate from all
+        const calendars = await listCalendars(client);
+        const allEvents: DavitEvent[] = [];
+        for (const cal of calendars) {
+          const events = await listEvents(client, cal, {
+            start: from,
+            end: to,
+          });
+          allEvents.push(...events);
+        }
+        allEvents.sort((a, b) => a.start.localeCompare(b.start));
+        console.log(formatEvents(allEvents, format as OutputFormat));
+        return;
+      }
+
       const cal = await resolveCalendar(
         client,
         calendar,
