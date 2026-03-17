@@ -56,8 +56,8 @@ davit event update <uid> --title "New Title" --desc "Updated notes"
 davit event delete <uid>
 ```
 
-All commands support `--format json|table` (default: table).
-`show`, `update`, `delete` accept `--calendar <name>` to narrow the search.
+All commands support `--format json|table` (default: table). `show`, `update`,
+`delete` accept `--calendar <name>` to narrow the search.
 
 ## AI Integration
 
