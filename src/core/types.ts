@@ -22,6 +22,10 @@ export interface DavitEvent {
   end: string;
   /** Event description/notes */
   description?: string;
+  /** Event location */
+  location?: string;
+  /** Event URL (meeting link, etc.) */
+  eventUrl?: string;
   /** Calendar URL this event belongs to */
   calendarUrl: string;
   /** Server URL for this event (needed for update/delete) */
@@ -36,6 +40,8 @@ export interface CreateEventInput {
   start: string;
   end: string;
   description?: string;
+  location?: string;
+  eventUrl?: string;
   calendarUrl: string;
 }
 
@@ -46,6 +52,8 @@ export interface UpdateEventInput {
   start?: string;
   end?: string;
   description?: string;
+  location?: string;
+  eventUrl?: string;
 }
 
 /** davit configuration */

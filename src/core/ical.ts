@@ -5,6 +5,8 @@ export interface VEventInput {
   start: string;
   end: string;
   description?: string;
+  location?: string;
+  url?: string;
 }
 
 /** Parsed VEVENT fields */
@@ -14,6 +16,8 @@ export interface VEventParsed {
   start: string;
   end: string;
   description?: string;
+  location?: string;
+  url?: string;
 }
 
 /** Escape special characters per RFC 5545 */
