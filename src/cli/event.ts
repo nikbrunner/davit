@@ -35,9 +35,17 @@ async function resolveCalendar(
   return calendars[0]!;
 }
 
-/** Resolve event by UID — searches all calendars */
-async function resolveEvent(client: DavitClient, uid: string) {
-  const calendars = await listCalendars(client);
+/** Resolve event by UID — searches all calendars or a specific one */
+async function resolveEvent(
+  client: DavitClient,
+  uid: string,
+  calendarName?: string,
+  defaultCalendar?: string,
+) {
+  const calendars = calendarName || defaultCalendar
+    ? [await resolveCalendar(client, calendarName, defaultCalendar)]
+    : await listCalendars(client);
+
   for (const cal of calendars) {
     const event = await getEvent(client, cal, uid);
     if (event) return event;
@@ -88,12 +96,23 @@ const showCommand = new Command()
   .option("--format <format:string>", "Output format (json|table)", {
     default: "table",
   })
-  .action(async ({ format }: { format: string }, uid: string) => {
-    const config = await loadConfig();
-    const client = await createClient(config);
-    const event = await resolveEvent(client, uid);
-    console.log(formatEvent(event, format as OutputFormat));
-  });
+  .option("--calendar <name:string>", "Calendar to search in")
+  .action(
+    async (
+      { format, calendar }: { format: string; calendar?: string },
+      uid: string,
+    ) => {
+      const config = await loadConfig();
+      const client = await createClient(config);
+      const event = await resolveEvent(
+        client,
+        uid,
+        calendar,
+        config.defaultCalendar,
+      );
+      console.log(formatEvent(event, format as OutputFormat));
+    },
+  );
 
 const createCommand = new Command()
   .description("Create a new event")
@@ -151,6 +170,7 @@ const updateCommand = new Command()
   .option("--start <datetime:string>", "New start time")
   .option("--end <datetime:string>", "New end time")
   .option("--desc <text:string>", "New description")
+  .option("--calendar <name:string>", "Calendar to search in")
   .option("--format <format:string>", "Output format (json|table)", {
     default: "table",
   })
@@ -161,19 +181,26 @@ const updateCommand = new Command()
         start,
         end,
         desc,
+        calendar,
         format,
       }: {
         title?: string;
         start?: string;
         end?: string;
         desc?: string;
+        calendar?: string;
         format: string;
       },
       uid: string,
     ) => {
       const config = await loadConfig();
       const client = await createClient(config);
-      const existing = await resolveEvent(client, uid);
+      const existing = await resolveEvent(
+        client,
+        uid,
+        calendar,
+        config.defaultCalendar,
+      );
       const updated = await updateEvent(client, existing, {
         uid,
         title,
@@ -188,13 +215,21 @@ const updateCommand = new Command()
 const deleteCommand = new Command()
   .description("Delete an event")
   .arguments("<uid:string>")
-  .action(async (_opts: void, uid: string) => {
-    const config = await loadConfig();
-    const client = await createClient(config);
-    const event = await resolveEvent(client, uid);
-    await deleteEvent(client, event);
-    console.log(`Deleted event "${event.title}" (${event.uid})`);
-  });
+  .option("--calendar <name:string>", "Calendar to search in")
+  .action(
+    async ({ calendar }: { calendar?: string }, uid: string) => {
+      const config = await loadConfig();
+      const client = await createClient(config);
+      const event = await resolveEvent(
+        client,
+        uid,
+        calendar,
+        config.defaultCalendar,
+      );
+      await deleteEvent(client, event);
+      console.log(`Deleted event "${event.title}" (${event.uid})`);
+    },
+  );
 
 export const eventCommand = new Command()
   .description("Event operations")
