@@ -1,6 +1,6 @@
 # davit
 
-CalDAV CLI & MCP server. Full CRUD for calendar events with iCloud support.
+CalDAV CLI tool. Full CRUD for calendar events with iCloud support.
 
 > "DAV it" — just do it.
 
@@ -49,63 +49,30 @@ davit calendar list
 davit event list --from "2026-03-17T00:00:00Z" --to "2026-03-23T23:59:59Z"
 davit event list --calendar iCloud --format json
 davit event show <uid>
-davit event create "Meeting" --start "2026-03-17T16:00:00Z" --end "2026-03-17T16:30:00Z" --desc "Notes"
+davit event create "Meeting" \
+  --start "2026-03-17T16:00:00Z" --end "2026-03-17T16:30:00Z" \
+  --desc "Notes" --location "Room 42" --url "https://meet.google.com/abc"
 davit event update <uid> --title "New Title" --desc "Updated notes"
 davit event delete <uid>
 ```
 
 All commands support `--format json|table` (default: table).
+`show`, `update`, `delete` accept `--calendar <name>` to narrow the search.
 
-## MCP Server
+## AI Integration
 
-davit runs as an MCP stdio server when piped (no args, no TTY), or explicitly
-via:
-
-```bash
-davit serve
-```
-
-### Claude Code Configuration
-
-Add to your MCP settings (e.g. `~/.claude/claude_desktop_config.json` or
-`claude-mcp.sh`):
-
-```json
-{
-  "mcpServers": {
-    "davit": {
-      "command": "/path/to/dist/davit",
-      "args": ["serve"],
-      "env": {
-        "CALDAV_BASE_URL": "https://caldav.icloud.com",
-        "CALDAV_USERNAME": "your@apple-id.com",
-        "CALDAV_PASSWORD": "your-app-specific-password"
-      }
-    }
-  }
-}
-```
-
-### Available MCP Tools
-
-| Tool             | Description                                                                |
-| ---------------- | -------------------------------------------------------------------------- |
-| `list_calendars` | List all calendars                                                         |
-| `list_events`    | List events in a time range (`from`, `to`, optional `calendar`)            |
-| `show_event`     | Show full event details by UID                                             |
-| `create_event`   | Create event (`title`, `start`, `end`, optional `description`, `calendar`) |
-| `update_event`   | Update event fields by UID                                                 |
-| `delete_event`   | Delete event by UID                                                        |
-
-All datetime parameters use ISO 8601 UTC format (e.g. `2026-03-17T15:00:00Z`).
+davit is designed to be called by AI assistants via CLI. For Claude Code, a
+skill is available that describes all commands and usage patterns.
 
 ## Development
 
 ```bash
 deno task dev          # Run in dev mode
-deno task test         # Run unit tests (26 tests)
+deno task test         # Run unit tests
+deno task checks       # fmt + lint + check + test
 deno task fmt          # Format code
 deno task lint         # Lint code
+deno task compile      # Build standalone binary
 ```
 
 Pre-commit hook enforces: `fmt --check` → `lint` → `check` → `test`.
