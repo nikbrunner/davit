@@ -63,6 +63,37 @@ function fromIcalDateTime(ical: string): string {
   return ical;
 }
 
+/** Fold a single iCal line at 75 octets per RFC 5545 */
+function foldLine(line: string): string {
+  const encoder = new TextEncoder();
+  if (encoder.encode(line).length <= 75) return line;
+
+  const result: string[] = [];
+  let remaining = line;
+  let isFirst = true;
+
+  while (remaining.length > 0) {
+    const maxBytes = isFirst ? 75 : 74; // continuation lines have leading space
+    // Find how many chars fit in maxBytes
+    let charCount = 0;
+    let byteCount = 0;
+    for (const char of remaining) {
+      const charBytes = encoder.encode(char).length;
+      if (byteCount + charBytes > maxBytes) break;
+      byteCount += charBytes;
+      charCount++;
+    }
+    if (charCount === 0) charCount = 1; // at least one char to avoid infinite loop
+
+    const chunk = remaining.substring(0, charCount);
+    result.push(isFirst ? chunk : ` ${chunk}`);
+    remaining = remaining.substring(charCount);
+    isFirst = false;
+  }
+
+  return result.join("\r\n");
+}
+
 /** Build a complete VCALENDAR string with a single VEVENT */
 export function buildVEvent(input: VEventInput): string {
   const uid = input.uid ?? crypto.randomUUID();
@@ -84,7 +115,7 @@ export function buildVEvent(input: VEventInput): string {
   }
 
   lines.push("END:VEVENT", "END:VCALENDAR");
-  return lines.join("\r\n");
+  return lines.map(foldLine).join("\r\n");
 }
 
 /** Parse a VCALENDAR string and extract the first VEVENT's fields */

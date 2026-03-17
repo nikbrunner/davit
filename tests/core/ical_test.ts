@@ -136,6 +136,33 @@ Deno.test("buildVEvent: includes DTSTAMP", () => {
   assertEquals(match !== null, true);
 });
 
+Deno.test("buildVEvent: folds long lines at 75 octets", () => {
+  const longDesc = "A".repeat(100);
+  const ical = buildVEvent({
+    uid: "fold-build-test",
+    summary: "Test",
+    start: "2026-03-17T10:00:00Z",
+    end: "2026-03-17T11:00:00Z",
+    description: longDesc,
+  });
+
+  // Check that no raw line exceeds 75 bytes
+  // We need to split on \r\n to get raw lines (including continuation lines)
+  const rawLines = ical.split("\r\n");
+  for (const line of rawLines) {
+    const byteLength = new TextEncoder().encode(line).length;
+    assertEquals(
+      byteLength <= 75,
+      true,
+      `Line too long (${byteLength} bytes): ${line.substring(0, 40)}...`,
+    );
+  }
+
+  // Verify the description round-trips correctly through unfold+parse
+  const parsed = parseVEvent(ical);
+  assertEquals(parsed.description, longDesc);
+});
+
 Deno.test("parseVEvent: handles TZID-parameterized datetimes", () => {
   const ical = [
     "BEGIN:VCALENDAR",
