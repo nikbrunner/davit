@@ -1,5 +1,6 @@
 import { Command } from "@cliffy/command";
 import { loadConfig } from "../config.ts";
+import { parseDate } from "./date.ts";
 import { createClient } from "../core/client.ts";
 import { findCalendar, listCalendars } from "../core/calendars.ts";
 import {
@@ -57,10 +58,10 @@ async function resolveEvent(
 
 const listCommand = new Command()
   .description("List events in a time range")
-  .option("--from <date:string>", "Start date (ISO 8601)", {
+  .option("--from <date:string>", "Start date (natural language or ISO 8601)", {
     default: new Date().toISOString(),
   })
-  .option("--to <date:string>", "End date (ISO 8601)", {
+  .option("--to <date:string>", "End date (natural language or ISO 8601)", {
     default: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
   })
   .option("--calendar <name:string>", "Calendar name")
@@ -80,6 +81,8 @@ const listCommand = new Command()
       format: string;
     }) => {
       const config = await loadConfig();
+      const parsedFrom = parseDate(from, { timezone: config.timezone });
+      const parsedTo = parseDate(to, { timezone: config.timezone });
       const client = await createClient(config);
 
       if (!calendar && !config.defaultCalendar) {
@@ -88,8 +91,8 @@ const listCommand = new Command()
         const allEvents: DavitEvent[] = [];
         for (const cal of calendars) {
           const events = await listEvents(client, cal, {
-            start: from,
-            end: to,
+            start: parsedFrom,
+            end: parsedTo,
           });
           allEvents.push(...events);
         }
@@ -103,7 +106,10 @@ const listCommand = new Command()
         calendar,
         config.defaultCalendar,
       );
-      const events = await listEvents(client, cal, { start: from, end: to });
+      const events = await listEvents(client, cal, {
+        start: parsedFrom,
+        end: parsedTo,
+      });
       console.log(formatEvents(events, format as OutputFormat));
     },
   );
@@ -135,12 +141,20 @@ const showCommand = new Command()
 const createCommand = new Command()
   .description("Create a new event")
   .arguments("<title:string>")
-  .option("--start <datetime:string>", "Start time (ISO 8601)", {
-    required: true,
-  })
-  .option("--end <datetime:string>", "End time (ISO 8601)", {
-    required: true,
-  })
+  .option(
+    "--start <datetime:string>",
+    "Start time (natural language or ISO 8601)",
+    {
+      required: true,
+    },
+  )
+  .option(
+    "--end <datetime:string>",
+    "End time (natural language or ISO 8601)",
+    {
+      required: true,
+    },
+  )
   .option("--desc <text:string>", "Event description")
   .option("--location <place:string>", "Event location")
   .option("--url <link:string>", "Event URL (meeting link)")
@@ -170,6 +184,8 @@ const createCommand = new Command()
       title: string,
     ) => {
       const config = await loadConfig();
+      const parsedStart = parseDate(start, { timezone: config.timezone });
+      const parsedEnd = parseDate(end, { timezone: config.timezone });
       const client = await createClient(config);
       const cal = await resolveCalendar(
         client,
@@ -178,8 +194,8 @@ const createCommand = new Command()
       );
       const event = await createEvent(client, cal, {
         title,
-        start,
-        end,
+        start: parsedStart,
+        end: parsedEnd,
         description: desc,
         location,
         eventUrl: url,
@@ -193,8 +209,14 @@ const updateCommand = new Command()
   .description("Update an existing event")
   .arguments("<uid:string>")
   .option("--title <text:string>", "New title")
-  .option("--start <datetime:string>", "New start time")
-  .option("--end <datetime:string>", "New end time")
+  .option(
+    "--start <datetime:string>",
+    "New start time (natural language or ISO 8601)",
+  )
+  .option(
+    "--end <datetime:string>",
+    "New end time (natural language or ISO 8601)",
+  )
   .option("--desc <text:string>", "New description")
   .option("--location <place:string>", "Event location")
   .option("--url <link:string>", "Event URL (meeting link)")
@@ -226,6 +248,12 @@ const updateCommand = new Command()
       uid: string,
     ) => {
       const config = await loadConfig();
+      const parsedStart = start
+        ? parseDate(start, { timezone: config.timezone })
+        : undefined;
+      const parsedEnd = end
+        ? parseDate(end, { timezone: config.timezone })
+        : undefined;
       const client = await createClient(config);
       const existing = await resolveEvent(
         client,
@@ -236,8 +264,8 @@ const updateCommand = new Command()
       const updated = await updateEvent(client, existing, {
         uid,
         title,
-        start,
-        end,
+        start: parsedStart,
+        end: parsedEnd,
         description: desc,
         location,
         eventUrl: url,
