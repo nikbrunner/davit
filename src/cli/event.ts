@@ -124,6 +124,8 @@ const createCommand = new Command()
     required: true,
   })
   .option("--desc <text:string>", "Event description")
+  .option("--location <place:string>", "Event location")
+  .option("--url <link:string>", "Event URL (meeting link)")
   .option("--calendar <name:string>", "Calendar name")
   .option("--format <format:string>", "Output format (json|table)", {
     default: "table",
@@ -134,12 +136,16 @@ const createCommand = new Command()
         start,
         end,
         desc,
+        location,
+        url,
         calendar,
         format,
       }: {
         start: string;
         end: string;
         desc?: string;
+        location?: string;
+        url?: string;
         calendar?: string;
         format: string;
       },
@@ -157,6 +163,8 @@ const createCommand = new Command()
         start,
         end,
         description: desc,
+        location,
+        eventUrl: url,
         calendarUrl: cal.url,
       });
       console.log(formatEvent(event, format as OutputFormat));
@@ -170,6 +178,8 @@ const updateCommand = new Command()
   .option("--start <datetime:string>", "New start time")
   .option("--end <datetime:string>", "New end time")
   .option("--desc <text:string>", "New description")
+  .option("--location <place:string>", "Event location")
+  .option("--url <link:string>", "Event URL (meeting link)")
   .option("--calendar <name:string>", "Calendar to search in")
   .option("--format <format:string>", "Output format (json|table)", {
     default: "table",
@@ -181,6 +191,8 @@ const updateCommand = new Command()
         start,
         end,
         desc,
+        location,
+        url,
         calendar,
         format,
       }: {
@@ -188,6 +200,8 @@ const updateCommand = new Command()
         start?: string;
         end?: string;
         desc?: string;
+        location?: string;
+        url?: string;
         calendar?: string;
         format: string;
       },
@@ -207,6 +221,8 @@ const updateCommand = new Command()
         start,
         end,
         description: desc,
+        location,
+        eventUrl: url,
       });
       console.log(formatEvent(updated, format as OutputFormat));
     },

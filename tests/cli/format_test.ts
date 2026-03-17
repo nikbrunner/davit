@@ -71,6 +71,17 @@ Deno.test("formatEvent: table format shows all fields", () => {
   assertStringIncludes(result, "Description: Daily standup notes");
 });
 
+Deno.test("formatEvent: table format shows location and url", () => {
+  const event = {
+    ...sampleEvent,
+    location: "Room 42",
+    eventUrl: "https://zoom.us/j/123",
+  };
+  const result = formatEvent(event, "table");
+  assertStringIncludes(result, "Location:    Room 42");
+  assertStringIncludes(result, "URL:         https://zoom.us/j/123");
+});
+
 Deno.test("formatEvent: table format omits description when absent", () => {
   const noDesc = { ...sampleEvent, description: undefined };
   const result = formatEvent(noDesc, "table");

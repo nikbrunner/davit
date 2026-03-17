@@ -52,6 +52,8 @@ export function formatEvent(
     `End:         ${event.end}`,
   ];
   if (event.description) lines.push(`Description: ${event.description}`);
+  if (event.location) lines.push(`Location:    ${event.location}`);
+  if (event.eventUrl) lines.push(`URL:         ${event.eventUrl}`);
   lines.push(`Calendar:    ${event.calendarUrl}`);
   return lines.join("\n");
 }

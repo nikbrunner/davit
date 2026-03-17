@@ -21,6 +21,8 @@ export function mapEvent(
     start: parsed.start,
     end: parsed.end,
     description: parsed.description,
+    location: parsed.location,
+    eventUrl: parsed.url,
     calendarUrl,
     url: raw.url ?? "",
     etag: raw.etag,
@@ -84,6 +86,8 @@ export function buildCreatePayload(input: CreateEventInput): {
     start: input.start,
     end: input.end,
     description: input.description,
+    location: input.location,
+    url: input.eventUrl,
   });
   return { filename: `${uid}.ics`, iCalString, uid };
 }
@@ -99,6 +103,8 @@ export function buildUpdatePayload(
     start: updates.start ?? existing.start,
     end: updates.end ?? existing.end,
     description: updates.description ?? existing.description,
+    location: updates.location ?? existing.location,
+    url: updates.eventUrl ?? existing.eventUrl,
   });
   return { iCalString };
 }
@@ -125,6 +131,8 @@ export async function createEvent(
     start: input.start,
     end: input.end,
     description: input.description,
+    location: input.location,
+    eventUrl: input.eventUrl,
     calendarUrl: calendar.url,
     url: `${calendar.url}${filename}`,
     etag: undefined,
@@ -153,6 +161,8 @@ export async function updateEvent(
     start: updates.start ?? existing.start,
     end: updates.end ?? existing.end,
     description: updates.description ?? existing.description,
+    location: updates.location ?? existing.location,
+    eventUrl: updates.eventUrl ?? existing.eventUrl,
   };
 }
 

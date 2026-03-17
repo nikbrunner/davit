@@ -70,6 +70,28 @@ Deno.test("buildCreatePayload: produces filename and iCalString", () => {
   assertStringIncludes(payload.iCalString, "DESCRIPTION:Agenda items");
 });
 
+Deno.test("mapEvent: extracts location and url", () => {
+  const ical = [
+    "BEGIN:VCALENDAR",
+    "BEGIN:VEVENT",
+    "UID:loc-map",
+    "SUMMARY:Meeting",
+    "DTSTART:20260317T150000Z",
+    "DTEND:20260317T160000Z",
+    "LOCATION:Room 42",
+    "URL:https://zoom.us/j/999",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+
+  const event = mapEvent(
+    { url: "/cal/loc.ics", data: ical, etag: '"e1"' },
+    "/cal/",
+  );
+  assertEquals(event.location, "Room 42");
+  assertEquals(event.eventUrl, "https://zoom.us/j/999");
+});
+
 Deno.test("buildUpdatePayload: merges existing event with updates", () => {
   const existing: DavitEvent = {
     uid: "existing-123",
