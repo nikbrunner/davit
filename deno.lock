@@ -12,6 +12,7 @@
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/text@^1.0.17": "1.0.17",
     "jsr:@std/toml@1": "1.0.11",
+    "npm:chrono-node@2.7.7": "2.7.7",
     "npm:tsdav@2.1.8": "2.1.8"
   },
   "jsr": {
@@ -70,11 +71,20 @@
     "base-64@1.0.0": {
       "integrity": "sha512-kwDPIFCGx0NZHog36dj+tHiwP4QMzsZ3AgMViUBKI0+V5n4U0ufTCUMhnQ04diaRI8EX/QcPfql7zlhZ7j4zgg=="
     },
+    "chrono-node@2.7.7": {
+      "integrity": "sha512-p3S7gotuTPu5oqhRL2p1fLwQXGgdQaRTtWR3e8Di9P1Pa9mzkK5DWR5AWBieMUh2ZdOnPgrK+zCrbbtyuA+D/Q==",
+      "dependencies": [
+        "dayjs"
+      ]
+    },
     "cross-fetch@4.1.0": {
       "integrity": "sha512-uKm5PU+MHTootlWEY+mZ4vvXoCn4fLQxT9dSc1sXVMSFkINTJVN8cAQROpwcKm8bJ/c7rgZVIBWzH5T78sNZZw==",
       "dependencies": [
         "node-fetch"
       ]
+    },
+    "dayjs@1.11.20": {
+      "integrity": "sha512-YbwwqR/uYpeoP4pu043q+LTDLFBLApUP6VxRihdfNTqu4ubqMlGDLd6ErXhEgsyvY0K6nCs7nggYumAN+9uEuQ=="
     },
     "debug@4.4.3": {
       "integrity": "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==",
@@ -129,6 +139,7 @@
       "jsr:@cliffy/command@1",
       "jsr:@std/assert@1",
       "jsr:@std/toml@1",
+      "npm:chrono-node@2.7.7",
       "npm:tsdav@2.1.8"
     ]
   }
