@@ -113,5 +113,5 @@ Pre-commit hook enforces: `fmt --check` → `lint` → `check` → `test`.
 Activate hooks after cloning:
 
 ```bash
-bash scripts/setup-hooks.sh
+deno task setup-git-hooks
 ```

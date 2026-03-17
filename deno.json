@@ -9,7 +9,7 @@
     "compile": "deno compile --allow-net --allow-read --allow-env --output dist/davit src/index.ts",
     "check": "deno check src/**/*.ts",
     "checks": "deno task fmt:check && deno task lint && deno task check && deno task test",
-    "setup-git-hooks": "bash scripts/setup-hooks.sh"
+    "setup-git-hooks": "bash scripts/setup-git-hooks.sh"
   },
   "imports": {
     "tsdav": "npm:tsdav@2.1.8",
