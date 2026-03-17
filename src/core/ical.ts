@@ -43,11 +43,24 @@ function toIcalDateTime(iso: string): string {
   }T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`;
 }
 
-/** Convert iCalendar UTC datetime (YYYYMMDDTHHMMSSZ) to ISO 8601 */
+/** Convert iCalendar datetime to ISO 8601. Handles both UTC (Z suffix) and local time formats. */
 function fromIcalDateTime(ical: string): string {
-  const m = ical.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/);
-  if (!m) return ical;
-  return `${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}Z`;
+  // UTC format: YYYYMMDDTHHMMSSZ
+  const utc = ical.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/);
+  if (utc) {
+    return `${utc[1]}-${utc[2]}-${utc[3]}T${utc[4]}:${utc[5]}:${utc[6]}Z`;
+  }
+  // Local/TZID format: YYYYMMDDTHHMMSS (no Z)
+  const local = ical.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})$/);
+  if (local) {
+    return `${local[1]}-${local[2]}-${local[3]}T${local[4]}:${local[5]}:${
+      local[6]
+    }`;
+  }
+  // Date-only: YYYYMMDD
+  const dateOnly = ical.match(/^(\d{4})(\d{2})(\d{2})$/);
+  if (dateOnly) return `${dateOnly[1]}-${dateOnly[2]}-${dateOnly[3]}`;
+  return ical;
 }
 
 /** Build a complete VCALENDAR string with a single VEVENT */
@@ -89,8 +102,10 @@ export function parseVEvent(icalString: string): VEventParsed {
 
     const colonIdx = line.indexOf(":");
     if (colonIdx === -1) continue;
-    const key = line.substring(0, colonIdx);
+    const rawKey = line.substring(0, colonIdx);
     const value = line.substring(colonIdx + 1);
+    // Strip property parameters (e.g. "DTSTART;TZID=Europe/Berlin" → "DTSTART")
+    const key = rawKey.split(";")[0]!;
     props[key] = value;
   }
 

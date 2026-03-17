@@ -100,3 +100,21 @@ Deno.test("parseVEvent: handles missing optional fields", () => {
   assertEquals(event.uid, "minimal-123");
   assertEquals(event.description, undefined);
 });
+
+Deno.test("parseVEvent: handles TZID-parameterized datetimes", () => {
+  const ical = [
+    "BEGIN:VCALENDAR",
+    "BEGIN:VEVENT",
+    "UID:tzid-123",
+    "SUMMARY:Local Time Event",
+    "DTSTART;TZID=Europe/Berlin:20260317T090000",
+    "DTEND;TZID=Europe/Berlin:20260317T100000",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+
+  const event = parseVEvent(ical);
+  assertEquals(event.uid, "tzid-123");
+  assertEquals(event.start, "2026-03-17T09:00:00");
+  assertEquals(event.end, "2026-03-17T10:00:00");
+});
