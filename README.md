@@ -9,7 +9,8 @@ CalDAV CLI & MCP server. Full CRUD for calendar events with iCloud support.
 ### Prerequisites
 
 - [Deno 2](https://deno.land/) installed
-- iCloud CalDAV credentials (app-specific password from [appleid.apple.com](https://appleid.apple.com))
+- iCloud CalDAV credentials (app-specific password from
+  [appleid.apple.com](https://appleid.apple.com))
 
 ### Environment Variables
 
@@ -55,9 +56,10 @@ davit event delete <uid>
 
 All commands support `--format json|table` (default: table).
 
-## MCP Server (for Penny)
+## MCP Server
 
-davit runs as an MCP stdio server when piped (no args, no TTY), or explicitly via:
+davit runs as an MCP stdio server when piped (no args, no TTY), or explicitly
+via:
 
 ```bash
 davit serve
@@ -65,7 +67,8 @@ davit serve
 
 ### Claude Code Configuration
 
-Add to your MCP settings (e.g. `~/.claude/claude_desktop_config.json` or `claude-mcp.sh`):
+Add to your MCP settings (e.g. `~/.claude/claude_desktop_config.json` or
+`claude-mcp.sh`):
 
 ```json
 {
@@ -85,14 +88,14 @@ Add to your MCP settings (e.g. `~/.claude/claude_desktop_config.json` or `claude
 
 ### Available MCP Tools
 
-| Tool | Description |
-|-|-|
-| `list_calendars` | List all calendars |
-| `list_events` | List events in a time range (`from`, `to`, optional `calendar`) |
-| `show_event` | Show full event details by UID |
-| `create_event` | Create event (`title`, `start`, `end`, optional `description`, `calendar`) |
-| `update_event` | Update event fields by UID |
-| `delete_event` | Delete event by UID |
+| Tool             | Description                                                                |
+| ---------------- | -------------------------------------------------------------------------- |
+| `list_calendars` | List all calendars                                                         |
+| `list_events`    | List events in a time range (`from`, `to`, optional `calendar`)            |
+| `show_event`     | Show full event details by UID                                             |
+| `create_event`   | Create event (`title`, `start`, `end`, optional `description`, `calendar`) |
+| `update_event`   | Update event fields by UID                                                 |
+| `delete_event`   | Delete event by UID                                                        |
 
 All datetime parameters use ISO 8601 UTC format (e.g. `2026-03-17T15:00:00Z`).
 
