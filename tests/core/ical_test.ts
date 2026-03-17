@@ -163,6 +163,47 @@ Deno.test("buildVEvent: folds long lines at 75 octets", () => {
   assertEquals(parsed.description, longDesc);
 });
 
+Deno.test("buildVEvent: includes LOCATION when provided", () => {
+  const ical = buildVEvent({
+    uid: "loc-test",
+    summary: "Office Meeting",
+    start: "2026-03-17T10:00:00Z",
+    end: "2026-03-17T11:00:00Z",
+    location: "Conference Room A",
+  });
+  assertStringIncludes(ical, "LOCATION:Conference Room A");
+});
+
+Deno.test("buildVEvent: includes URL when provided", () => {
+  const ical = buildVEvent({
+    uid: "url-test",
+    summary: "Video Call",
+    start: "2026-03-17T10:00:00Z",
+    end: "2026-03-17T11:00:00Z",
+    url: "https://meet.google.com/abc-defg-hij",
+  });
+  assertStringIncludes(ical, "URL:https://meet.google.com/abc-defg-hij");
+});
+
+Deno.test("parseVEvent: extracts LOCATION and URL", () => {
+  const ical = [
+    "BEGIN:VCALENDAR",
+    "BEGIN:VEVENT",
+    "UID:locurl-parse",
+    "SUMMARY:Meeting",
+    "DTSTART:20260317T150000Z",
+    "DTEND:20260317T160000Z",
+    "LOCATION:Building 3\\, Floor 2",
+    "URL:https://zoom.us/j/123456",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+
+  const event = parseVEvent(ical);
+  assertEquals(event.location, "Building 3, Floor 2");
+  assertEquals(event.url, "https://zoom.us/j/123456");
+});
+
 Deno.test("parseVEvent: handles TZID-parameterized datetimes", () => {
   const ical = [
     "BEGIN:VCALENDAR",

@@ -117,6 +117,12 @@ export function buildVEvent(input: VEventInput): string {
   if (input.description) {
     lines.push(`DESCRIPTION:${escapeIcalText(input.description)}`);
   }
+  if (input.location) {
+    lines.push(`LOCATION:${escapeIcalText(input.location)}`);
+  }
+  if (input.url) {
+    lines.push(`URL:${input.url}`);
+  }
 
   lines.push("END:VEVENT", "END:VCALENDAR");
   return lines.map(foldLine).join("\r\n");
@@ -155,5 +161,9 @@ export function parseVEvent(icalString: string): VEventParsed {
     description: props["DESCRIPTION"]
       ? unescapeIcalText(props["DESCRIPTION"])
       : undefined,
+    location: props["LOCATION"]
+      ? unescapeIcalText(props["LOCATION"])
+      : undefined,
+    url: props["URL"],
   };
 }
