@@ -10,7 +10,7 @@ tested primarily against iCloud.
 ### Prerequisites
 
 - [Deno 2](https://deno.land/)
-- iCloud CalDAV credentials (app-specific password from
+- CalDAV server credentials (for iCloud: app-specific password from
   [appleid.apple.com](https://appleid.apple.com))
 
 ### Global Install
@@ -19,9 +19,52 @@ tested primarily against iCloud.
 deno task install    # → ~/.deno/bin/davit
 ```
 
-### Environment Variables
+## Configuration
 
-Set in your shell or `~/.env`:
+Config file at `~/.config/davit/config.toml`. Safe to track in dotfiles —
+passwords are resolved from environment variables, never stored in the file.
+
+```toml
+default_server = "icloud"
+default_calendar = "iCloud"
+
+[servers.icloud]
+url = "https://caldav.icloud.com"
+username = "your@apple-id.com"
+# Password resolved from DAVIT_ICLOUD_PASSWORD env var
+```
+
+### Password Resolution
+
+Passwords are resolved per server in this order:
+
+1. `DAVIT_{SERVER_NAME}_PASSWORD` env var (e.g. `DAVIT_ICLOUD_PASSWORD`)
+2. `password` field in config (not recommended — use env vars)
+3. Error
+
+Set the env var in your shell profile or `~/.env`:
+
+```bash
+export DAVIT_ICLOUD_PASSWORD="your-app-specific-password"
+```
+
+### Multiple Servers
+
+```toml
+default_server = "icloud"
+
+[servers.icloud]
+url = "https://caldav.icloud.com"
+username = "your@apple-id.com"
+
+[servers.fastmail]
+url = "https://caldav.fastmail.com/dav/calendars"
+username = "your@fastmail.com"
+```
+
+### Fallback (No Config File)
+
+If no config file exists, davit falls back to these env vars:
 
 ```bash
 export CALDAV_BASE_URL="https://caldav.icloud.com"
@@ -63,7 +106,7 @@ All commands support `--format json|table` (default: table). `show`, `update`,
 ```bash
 deno task dev              # Run in dev mode
 deno task test             # Unit tests
-deno task test:integration # Integration tests (requires iCloud credentials)
+deno task test:integration # Integration tests (requires credentials)
 deno task checks           # fmt + lint + check + test
 deno task compile          # Build standalone binary → dist/davit
 deno task install          # Install globally → ~/.deno/bin/davit
