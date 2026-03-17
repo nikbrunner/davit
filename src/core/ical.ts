@@ -72,6 +72,7 @@ export function buildVEvent(input: VEventInput): string {
     "PRODID:-//davit//EN",
     "BEGIN:VEVENT",
     `UID:${uid}`,
+    `DTSTAMP:${toIcalDateTime(new Date().toISOString())}`,
     `DTSTART:${toIcalDateTime(input.start)}`,
     `DTEND:${toIcalDateTime(input.end)}`,
     `SUMMARY:${escapeIcalText(input.summary)}`,

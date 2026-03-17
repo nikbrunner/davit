@@ -123,6 +123,19 @@ Deno.test("parseVEvent: unfolds continuation lines", () => {
   );
 });
 
+Deno.test("buildVEvent: includes DTSTAMP", () => {
+  const ical = buildVEvent({
+    uid: "dtstamp-test",
+    summary: "Test",
+    start: "2026-03-17T10:00:00Z",
+    end: "2026-03-17T11:00:00Z",
+  });
+
+  // DTSTAMP should be present with UTC format
+  const match = ical.match(/DTSTAMP:(\d{8}T\d{6}Z)/);
+  assertEquals(match !== null, true);
+});
+
 Deno.test("parseVEvent: handles TZID-parameterized datetimes", () => {
   const ical = [
     "BEGIN:VCALENDAR",
