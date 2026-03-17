@@ -143,7 +143,7 @@ export async function updateEvent(
     calendarObject: {
       url: existing.url,
       data: iCalString,
-      etag: existing.etag ?? "",
+      etag: existing.etag,
     },
   });
 
@@ -164,7 +164,7 @@ export async function deleteEvent(
   await client.deleteCalendarObject({
     calendarObject: {
       url: event.url,
-      etag: event.etag ?? "",
+      etag: event.etag,
     },
   });
 }
