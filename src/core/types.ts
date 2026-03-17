@@ -56,10 +56,77 @@ export interface UpdateEventInput {
   eventUrl?: string;
 }
 
+/** An address book as returned by davit */
+export interface DavitAddressBook {
+  /** Server-side URL */
+  url: string;
+  /** Display name */
+  displayName: string;
+  /** Description */
+  description?: string;
+  /** ctag for sync detection */
+  ctag?: string;
+}
+
+/** A contact as returned by davit */
+export interface DavitContact {
+  /** Unique contact identifier (from VCARD UID) */
+  uid: string;
+  /** Full name (FN) */
+  fullName: string;
+  /** Last name (from N property) */
+  lastName?: string;
+  /** First name (from N property) */
+  firstName?: string;
+  /** Phone number (TEL) */
+  phone?: string;
+  /** Email address (EMAIL) */
+  email?: string;
+  /** Physical address (ADR, formatted) */
+  address?: string;
+  /** Organization (ORG) */
+  organization?: string;
+  /** Notes (NOTE) */
+  note?: string;
+  /** Address book URL this contact belongs to */
+  addressBookUrl: string;
+  /** Server URL for this contact (needed for update/delete) */
+  url: string;
+  /** ETag for optimistic locking */
+  etag?: string;
+}
+
+/** Input for creating a new contact */
+export interface CreateContactInput {
+  fullName: string;
+  lastName?: string;
+  firstName?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  organization?: string;
+  note?: string;
+  addressBookUrl: string;
+}
+
+/** Input for updating a contact — all fields optional except uid */
+export interface UpdateContactInput {
+  uid: string;
+  fullName?: string;
+  lastName?: string;
+  firstName?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  organization?: string;
+  note?: string;
+}
+
 /** davit configuration */
 export interface DavitConfig {
   defaultServer: string;
   defaultCalendar?: string;
+  defaultAddressBook?: string;
   /** IANA timezone (e.g. "Europe/Berlin"). Falls back to system timezone. */
   timezone?: string;
   servers: Record<string, ServerConfig>;

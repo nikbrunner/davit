@@ -29,6 +29,7 @@ interface TomlServerConfig {
 interface TomlConfig {
   default_server: string;
   default_calendar?: string;
+  default_address_book?: string;
   timezone?: string;
   servers: Record<string, TomlServerConfig>;
 }
@@ -47,6 +48,7 @@ export function resolveConfig(tomlString: string): DavitConfig {
   return {
     defaultServer: raw.default_server,
     defaultCalendar: raw.default_calendar,
+    defaultAddressBook: raw.default_address_book,
     timezone: raw.timezone,
     servers,
   };

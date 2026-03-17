@@ -26,3 +26,28 @@ export async function createClient(config: DavitConfig): Promise<DavitClient> {
 
   return client;
 }
+
+/** Create an authenticated tsdav client for CardDAV (contacts) */
+export async function createCardDAVClient(
+  config: DavitConfig,
+): Promise<DavitClient> {
+  const serverName = config.defaultServer;
+  const server = config.servers[serverName];
+  if (!server) {
+    throw new Error(`Server "${serverName}" not found in config.`);
+  }
+
+  const password = resolvePassword(serverName, server.password);
+
+  const client = await createDAVClient({
+    serverUrl: server.url,
+    credentials: {
+      username: server.username,
+      password,
+    },
+    authMethod: "Basic",
+    defaultAccountType: "carddav",
+  });
+
+  return client;
+}
