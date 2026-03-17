@@ -60,6 +60,8 @@ export interface UpdateEventInput {
 export interface DavitConfig {
   defaultServer: string;
   defaultCalendar?: string;
+  /** IANA timezone (e.g. "Europe/Berlin"). Falls back to system timezone. */
+  timezone?: string;
   servers: Record<string, ServerConfig>;
 }
 

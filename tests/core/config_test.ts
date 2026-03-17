@@ -58,6 +58,19 @@ Deno.test("generateDefaultConfig: produces valid TOML with iCloud defaults", () 
   assertEquals(config.servers["icloud"]?.url, "https://caldav.icloud.com");
 });
 
+Deno.test("resolveConfig: parses timezone field", () => {
+  const toml = `
+default_server = "icloud"
+timezone = "Europe/Berlin"
+
+[servers.icloud]
+url = "https://caldav.icloud.com"
+username = "user@example.com"
+`;
+  const config = resolveConfig(toml);
+  assertEquals(config.timezone, "Europe/Berlin");
+});
+
 Deno.test("getConfigPath: returns ~/.config/davit/config.toml", () => {
   const home = Deno.env.get("HOME") ?? "";
   const expected = `${home}/.config/davit/config.toml`;
