@@ -50,10 +50,28 @@ export function resolveConfig(tomlString: string): DavitConfig {
   };
 }
 
+/** Get the config file path */
+export function getConfigPath(): string {
+  const home = Deno.env.get("HOME") ?? Deno.env.get("USERPROFILE") ?? "";
+  return `${home}/.config/davit/config.toml`;
+}
+
+/** Generate default config TOML content */
+export function generateDefaultConfig(): string {
+  return `\
+default_server = "icloud"
+# default_calendar = "iCloud"
+
+[servers.icloud]
+url = "https://caldav.icloud.com"
+username = "your@apple-id.com"
+# Password resolved from DAVIT_ICLOUD_PASSWORD env var
+`;
+}
+
 /** Load config from ~/.config/davit/config.toml, or return defaults from env */
 export async function loadConfig(): Promise<DavitConfig> {
-  const home = Deno.env.get("HOME") ?? Deno.env.get("USERPROFILE") ?? "";
-  const configPath = `${home}/.config/davit/config.toml`;
+  const configPath = getConfigPath();
 
   try {
     const text = await Deno.readTextFile(configPath);

@@ -1,5 +1,10 @@
-import { assertEquals, assertThrows } from "@std/assert";
-import { resolveConfig, resolvePassword } from "../../src/config.ts";
+import { assertEquals, assertStringIncludes, assertThrows } from "@std/assert";
+import {
+  generateDefaultConfig,
+  getConfigPath,
+  resolveConfig,
+  resolvePassword,
+} from "../../src/config.ts";
 
 Deno.test("resolvePassword: env var takes priority", () => {
   Deno.env.set("DAVIT_ICLOUD_PASSWORD", "env-pass");
@@ -38,4 +43,23 @@ username = "user@example.com"
   const icloud = config.servers["icloud"];
   assertEquals(icloud?.url, "https://caldav.icloud.com");
   assertEquals(icloud?.username, "user@example.com");
+});
+
+Deno.test("generateDefaultConfig: produces valid TOML with iCloud defaults", () => {
+  const toml = generateDefaultConfig();
+  assertStringIncludes(toml, 'default_server = "icloud"');
+  assertStringIncludes(toml, "[servers.icloud]");
+  assertStringIncludes(toml, 'url = "https://caldav.icloud.com"');
+  assertStringIncludes(toml, "DAVIT_ICLOUD_PASSWORD");
+
+  // Should round-trip through resolveConfig
+  const config = resolveConfig(toml);
+  assertEquals(config.defaultServer, "icloud");
+  assertEquals(config.servers["icloud"]?.url, "https://caldav.icloud.com");
+});
+
+Deno.test("getConfigPath: returns ~/.config/davit/config.toml", () => {
+  const home = Deno.env.get("HOME") ?? "";
+  const expected = `${home}/.config/davit/config.toml`;
+  assertEquals(getConfigPath(), expected);
 });
