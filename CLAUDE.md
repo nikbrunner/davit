@@ -2,11 +2,13 @@
 
 ## What is this?
 
-davit is a CalDAV CLI tool and MCP server with full CRUD for calendar events, targeting iCloud via tsdav.
+davit is a CalDAV CLI tool and MCP server with full CRUD for calendar events,
+targeting iCloud via tsdav.
 
 ## Architecture Rule
 
-All logic lives in `src/core/`. CLI (`src/cli/`) and MCP (`src/mcp/`) are thin wrappers that translate I/O. Never put business logic in the wrappers.
+All logic lives in `src/core/`. CLI (`src/cli/`) and MCP (`src/mcp/`) are thin
+wrappers that translate I/O. Never put business logic in the wrappers.
 
 ## iCloud Caveats
 
@@ -25,4 +27,4 @@ From environment (managed by 1Password in `~/.env`):
 
 ## tsdav Reference
 
-For API details, fetch: https://tsdav.vercel.app/llms-full.txt
+For API details, use the RefMCP for: https://tsdav.vercel.app/llms-full.txt
